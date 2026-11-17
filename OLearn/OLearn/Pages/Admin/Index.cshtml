@@ -1,0 +1,14 @@
+@page
+@model OLearn.Pages.Admin.IndexModel
+@{ ViewData["Title"] = "Administration"; }
+<main>
+    <h1>Administration</h1>
+    <partial name="_AdminNav" />
+    <div class="grid">
+        <div class="card stat"><b>@Model.Students</b>Students</div>
+        <div class="card stat"><b>@Model.Released</b>Resources released</div>
+        <div class="card stat"><b>@Model.ActiveLeases</b>Active leases</div>
+        <div class="card stat"><b>@Model.AuditEvents</b>Audit events received</div>
+        <div class="card stat"><b>@Model.Rejected</b>Audit logs rejected</div>
+    </div>
+</main>

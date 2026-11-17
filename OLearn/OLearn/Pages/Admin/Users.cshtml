@@ -1,0 +1,21 @@
+@page
+@model OLearn.Pages.Admin.UsersModel
+@{ ViewData["Title"] = "Users"; }
+<main>
+    <h1>Users</h1>
+    <partial name="_AdminNav" />
+    @if (!string.IsNullOrEmpty(Model.Message)) { <div class="card"><b>@Model.Message</b></div> }
+    <form method="post" class="card">
+        <h3>Add a student</h3>
+        <label class="field"><span>Username</span><input type="text" name="username" required /></label>
+        <label class="field"><span>Display name</span><input type="text" name="displayName" required /></label>
+        <label class="field"><span>Password (at least 8 characters)</span><input type="password" name="password" minlength="8" required /></label>
+        <button class="btn primary">Create student</button>
+    </form>
+    <div class="scroll">
+    <table>
+        <tr><th>Username</th><th>Name</th><th>Role</th><th>Created</th></tr>
+        @foreach (var u in Model.Users) { <tr><td>@u.Username</td><td>@u.DisplayName</td><td>@u.Role</td><td>@u.CreatedAt.ToString("yyyy-MM-dd")</td></tr> }
+    </table>
+    </div>
+</main>

@@ -1,0 +1,17 @@
+@page
+@model OLearn.Pages.Admin.ImportModel
+@{ ViewData["Title"] = "Bulk import"; }
+<main>
+    <h1>Bulk import</h1>
+    <partial name="_AdminNav" />
+    @if (!string.IsNullOrEmpty(Model.Message)) { <div class="card"><b>@Model.Message</b></div> }
+    <form method="post" enctype="multipart/form-data" class="card">
+        <p class="muted">Import several approved files into one module. Each file becomes a resource named after the file. Every import records its source reference, so the catalogue only holds approved material.</p>
+        <label class="field"><span>Module</span><select name="moduleId">@foreach (var m in Model.Modules) { <option value="@m.ModuleId">@m.Course!.CourseCode - @m.ModuleName</option> }</select></label>
+        <label class="field"><span>Files (PDF or PPTX)</span><input type="file" name="files" accept=".pdf,.pptx" multiple required /></label>
+        <label class="field"><span>Approved source reference</span><input type="text" name="source" required /></label>
+        <label class="field"><span>Lease duration (days)</span><input type="number" name="days" value="14" min="1" max="90" /></label>
+        <label class="field"><input type="checkbox" name="release" value="true" /> Release for offline use</label>
+        <button class="btn primary">Import</button>
+    </form>
+</main>

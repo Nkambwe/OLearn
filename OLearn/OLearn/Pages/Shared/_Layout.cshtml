@@ -1,0 +1,47 @@
+@inject OLearn.Services.RuntimeSettings Runtime
+@{
+    var path = Context.Request.Path.Value ?? "/";
+    string Active(string p) => path.StartsWith(p, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+    var isAdmin = User.IsInRole("Admin");
+}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1f4fd8" />
+    <title>@(ViewData["Title"] ?? "iLearn Lite") - iLearn Lite</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/icons/icon-192.png" />
+    <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body data-testmode="@(Runtime.TestMode ? "true" : "false")">
+    <header class="top">
+        <span class="brand">iLearn Lite</span>
+        <span id="conn-badge" class="pill online">Online</span>
+        <button class="btn" id="btn-sync-top" type="button">Sync now</button>
+        <span class="muted">@User.Identity?.Name</span>
+        <form method="post" asp-page="/Account/Logout" class="inline"><button class="btn" type="submit">Sign out</button></form>
+    </header>
+    <nav class="menu">
+        <a class="@Active("/Dashboard")" href="/Dashboard">Dashboard</a>
+        <a class="@Active("/Courses")" href="/Courses">Courses</a>
+        <a class="@Active("/Resources")" href="/Resources">Resources</a>
+        <a class="@Active("/Progress")" href="/Progress">Progress</a>
+        <a class="@Active("/Updates")" href="/Updates">Updates</a>
+        <a class="@Active("/Settings")" href="/Settings">Settings</a>
+        <a class="@Active("/Help")" href="/Help">Help</a>
+        @if (isAdmin)
+        {
+            <a class="@Active("/Admin")" href="/Admin">Admin</a>
+        }
+    </nav>
+    @RenderBody()
+    @if (!path.StartsWith("/Admin", StringComparison.OrdinalIgnoreCase))
+    {
+        <script src="/js/lease-public-key.js"></script>
+        <script type="module" src="/js/app.js"></script>
+        <script type="module" src="/js/pages.js"></script>
+    }
+</body>
+</html>

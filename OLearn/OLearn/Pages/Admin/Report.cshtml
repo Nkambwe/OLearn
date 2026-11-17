@@ -1,0 +1,41 @@
+@page
+@model OLearn.Pages.Admin.ReportModel
+@{ ViewData["Title"] = "Offline access report"; }
+<main>
+    <h1>Offline access report</h1>
+    <partial name="_AdminNav" />
+    <p class="muted">Built from signed leases and the device audit logs uploaded at synchronisation. Entries are verified as a hash chain before they are stored.</p>
+    <div class="grid">
+        <div class="card stat"><b>@Model.Opens</b>Opens recorded</div>
+        <div class="card stat"><b>@Model.ExpiredRefusals</b>Refused: lease expired</div>
+        <div class="card stat"><b>@Model.IntegrityFailures</b>Refused: integrity failure</div>
+        <div class="card stat"><b>@Model.OtherRefusals</b>Refused: signature or clock</div>
+        <div class="card stat"><b>@Model.Rejected</b>Audit logs rejected</div>
+    </div>
+    <h2>Per lease</h2>
+    <div class="scroll">
+    <table>
+        <tr><th>Student</th><th>Resource</th><th>Issued</th><th>Expires</th><th>Status</th><th>Last open</th><th>Opens</th><th>Expired refusals</th><th>Integrity failures</th></tr>
+        @foreach (var r in Model.Rows)
+        {
+            <tr>
+                <td>@r.Student</td><td>@r.Resource (@r.Version)</td>
+                <td>@r.Issued.ToString("yyyy-MM-dd HH:mm")</td><td>@r.Expires.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@r.Status</td>
+                <td>@(r.LastOpen?.ToString("yyyy-MM-dd HH:mm") ?? "never")</td>
+                <td>@r.Opens</td><td>@r.Expired</td><td>@r.Integrity</td>
+            </tr>
+        }
+    </table>
+    </div>
+    <h2>Rejected audit uploads</h2>
+    <div class="scroll">
+    <table>
+        <tr><th>Time</th><th>Student</th><th>Reason</th></tr>
+        @foreach (var s in Model.RejectedLogs)
+        {
+            <tr><td>@s.StartedAt.ToString("yyyy-MM-dd HH:mm:ss")</td><td>@s.User?.DisplayName</td><td>@s.Message</td></tr>
+        }
+    </table>
+    </div>
+</main>

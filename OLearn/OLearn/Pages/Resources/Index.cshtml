@@ -1,0 +1,11 @@
+@page "/Resources"
+@{ ViewData["Title"] = "Resources"; }
+<main data-page="resources">
+    <h1>Resources</h1>
+    <div class="filters">
+        <input type="text" id="search" placeholder="Search resources" aria-label="Search resources" />
+        <select id="filter-course" aria-label="Course"><option value="0">All courses</option></select>
+        <select id="filter-module" aria-label="Module"><option value="0">All modules</option></select>
+    </div>
+    <div id="list"></div>
+</main>

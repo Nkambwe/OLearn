@@ -1,0 +1,35 @@
+@page
+@model OLearn.Pages.Admin.LeasesModel
+@{ ViewData["Title"] = "Leases"; }
+<main>
+    <h1>Leases</h1>
+    <partial name="_AdminNav" />
+    @if (!string.IsNullOrEmpty(Model.Message)) { <div class="card"><b>@Model.Message</b></div> }
+    <p class="muted">Revoking a lease takes effect on the student's device at its next synchronisation. Until then the device may still open the copy, up to the lease expiry.</p>
+    <div class="scroll">
+    <table>
+        <tr><th>Student</th><th>Resource</th><th>Version</th><th>Issued</th><th>Expires</th><th>Status</th><th></th></tr>
+        @foreach (var l in Model.Rows)
+        {
+            <tr>
+                <td>@l.User!.DisplayName</td>
+                <td>@l.ResourceVersion!.Resource!.Title</td>
+                <td>@l.ResourceVersion.VersionLabel</td>
+                <td>@l.IssuedAt.ToString("yyyy-MM-dd HH:mm") UTC</td>
+                <td>@l.ExpiresAt.ToString("yyyy-MM-dd HH:mm") UTC</td>
+                <td>@OLearn.Services.LeaseService.Effective(l, DateTime.UtcNow)</td>
+                <td>
+                    @if (l.Status == OLearn.Models.LeaseStatus.Active)
+                    {
+                        <form method="post" asp-page-handler="Revoke" class="inline"><input type="hidden" name="id" value="@l.LeaseId" /><button class="btn">Revoke</button></form>
+                    }
+                    else if (l.Status == OLearn.Models.LeaseStatus.Revoked)
+                    {
+                        <form method="post" asp-page-handler="Reinstate" class="inline"><input type="hidden" name="id" value="@l.LeaseId" /><button class="btn">Reinstate</button></form>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+    </div>
+</main>

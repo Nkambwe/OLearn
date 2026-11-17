@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/docs/">
+    <File Path="../../../../Users/Macjohnan/Downloads/OLearn-lease/OLearn/docs/TEST_RUNBOOK.md" />
+    <File Path="../../../../Users/Macjohnan/Downloads/OLearn-lease/OLearn/docs/TRACEABILITY.md" />
+  </Folder>
+  <Folder Name="/tests-js/">
+    <File Path="../../../../Users/Macjohnan/Downloads/OLearn-lease/OLearn/tests-js/fakeServer.mjs" />
+    <File Path="../../../../Users/Macjohnan/Downloads/OLearn-lease/OLearn/tests-js/lease.test.mjs" />
+    <File Path="../../../../Users/Macjohnan/Downloads/OLearn-lease/OLearn/tests-js/package-lock.json" />
+    <File Path="../../../../Users/Macjohnan/Downloads/OLearn-lease/OLearn/tests-js/package.json" />
+  </Folder>
+  <Project Path="OLearn/OLearn.csproj" />
+</Solution>

@@ -1,0 +1,16 @@
+@page "/Dashboard"
+@{ ViewData["Title"] = "Dashboard"; }
+<main data-page="dashboard">
+    <h1>Dashboard</h1>
+    <div class="grid">
+        <div class="card stat"><b id="stat-courses">0</b>My courses</div>
+        <div class="card stat"><b id="stat-offline">0</b>Available offline</div>
+        <div class="card stat"><b id="stat-tasks">0</b>Tasks due</div>
+        <div class="card stat"><b id="stat-updates">0</b>Updates</div>
+        <div class="card stat"><b id="stat-expired">0</b>Leases expired</div>
+    </div>
+    <h2>Recently opened</h2>
+    <div class="card" id="recent"></div>
+    <h2>Learning progress</h2>
+    <div class="bar"><div id="progress-bar"></div></div>
+</main>

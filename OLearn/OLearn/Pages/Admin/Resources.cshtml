@@ -1,0 +1,54 @@
+@page
+@model OLearn.Pages.Admin.ResourcesModel
+@inject OLearn.Services.RuntimeSettings Runtime
+@{ ViewData["Title"] = "Resources"; }
+<main>
+    <h1>Resources</h1>
+    <partial name="_AdminNav" />
+    @if (!string.IsNullOrEmpty(Model.Message)) { <div class="card"><b>@Model.Message</b></div> }
+    <form method="post" asp-page-handler="Create" enctype="multipart/form-data" class="card">
+        <h3>Add a resource</h3>
+        <label class="field"><span>Module</span><select name="moduleId">@foreach (var m in Model.Modules) { <option value="@m.ModuleId">@m.Course!.CourseCode - @m.ModuleName</option> }</select></label>
+        <label class="field"><span>Title</span><input type="text" name="title" required /></label>
+        <label class="field"><span>File (PDF or PPTX)</span><input type="file" name="file" accept=".pdf,.pptx" required /></label>
+        <label class="field"><span>Approved source reference (where this file came from)</span><input type="text" name="source" required /></label>
+        <label class="field"><span>Lease duration (days, 1 to 90)</span><input type="number" name="days" value="14" min="1" max="90" /></label>
+        <label class="field"><input type="checkbox" name="release" value="true" /> Release for offline use now</label>
+        <button class="btn primary">Add resource</button>
+    </form>
+    <div class="scroll">
+    <table>
+        <tr><th>Title</th><th>Module</th><th>Version</th><th>Released</th><th>Lease days</th><th>Actions</th></tr>
+        @foreach (var r in Model.Rows)
+        {
+            <tr>
+                <td>@r.Resource.Title<br /><span class="muted">@r.Resource.FileType, @(r.Version?.SizeBytes / 1024) KB</span></td>
+                <td>@r.Resource.Module!.Course!.CourseCode - @r.Resource.Module.ModuleName</td>
+                <td>@r.Version?.VersionLabel<br /><span class="muted">@(r.Version?.Checksum.Substring(0, 12))...</span></td>
+                <td>@(r.Resource.IsAuthorised ? "Yes" : "No")</td>
+                <td>
+                    <form method="post" asp-page-handler="Days" class="inline">
+                        <input type="hidden" name="id" value="@r.Resource.ResourceId" />
+                        <input type="number" name="days" value="@r.Resource.LeaseDurationDays" min="1" max="90" style="width:5rem" />
+                        <button class="btn">Set</button>
+                    </form>
+                </td>
+                <td>
+                    <form method="post" asp-page-handler="Release" class="inline"><input type="hidden" name="id" value="@r.Resource.ResourceId" /><button class="btn">@(r.Resource.IsAuthorised ? "Unrelease" : "Release")</button></form>
+                    <form method="post" asp-page-handler="Version" enctype="multipart/form-data">
+                        <input type="hidden" name="id" value="@r.Resource.ResourceId" />
+                        <input type="file" name="file" accept=".pdf,.pptx" required />
+                        <input type="text" name="label" placeholder="Version label (optional)" />
+                        <button class="btn">Publish new version</button>
+                    </form>
+                    <form method="post" asp-page-handler="RevokeAll" class="inline"><input type="hidden" name="id" value="@r.Resource.ResourceId" /><button class="btn">Revoke all leases</button></form>
+                    @if (Runtime.TestMode)
+                    {
+                        <form method="post" asp-page-handler="Sample" class="inline"><input type="hidden" name="id" value="@r.Resource.ResourceId" /><button class="btn">Publish revised sample (test)</button></form>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+    </div>
+</main>

@@ -1,0 +1,27 @@
+@page
+@model OLearn.Pages.Admin.SettingsModel
+@{ ViewData["Title"] = "Settings and logs"; }
+<main>
+    <h1>Settings and logs</h1>
+    <partial name="_AdminNav" />
+    @if (!string.IsNullOrEmpty(Model.Message)) { <div class="card"><b>@Model.Message</b></div> }
+    <div class="card">
+        <h3>Test mode</h3>
+        @if (Model.TestMode)
+        {
+            <p class="muted">Test mode is on. Set a lease length in minutes so expiry can be observed during testing. Set 0 to use each resource's normal duration in days. Turn test mode off in appsettings.json for real use.</p>
+            <form method="post" class="inline">
+                <label>Lease minutes <input type="number" name="minutes" value="@Model.Minutes" min="0" max="1440" style="width:6rem" /></label>
+                <button class="btn primary">Save</button>
+            </form>
+        }
+        else { <p class="muted">Test mode is off. Leases use each resource's duration in days.</p> }
+    </div>
+    <h2>Recent synchronisations</h2>
+    <div class="scroll">
+    <table>
+        <tr><th>Time</th><th>Student</th><th>Status</th><th>Message</th></tr>
+        @foreach (var s in Model.Logs) { <tr><td>@s.StartedAt.ToString("yyyy-MM-dd HH:mm:ss")</td><td>@s.User?.DisplayName</td><td>@s.Status</td><td>@s.Message</td></tr> }
+    </table>
+    </div>
+</main>

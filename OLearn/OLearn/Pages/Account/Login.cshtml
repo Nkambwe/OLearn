@@ -1,0 +1,24 @@
+@page
+@model OLearn.Pages.Account.LoginModel
+@{ Layout = null; }
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign in - iLearn Lite</title>
+    <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body>
+    <div class="card center">
+        <h1>iLearn Lite</h1>
+        <p class="muted">Sign in while connected to download your resources, then keep learning offline. Your progress syncs when you're back online.</p>
+        @if (Model.Error != null) { <p class="error-text">@Model.Error</p> }
+        <form method="post">
+            <label class="field"><span>Username</span><input type="text" asp-for="Username" autocomplete="username" autofocus /></label>
+            <label class="field"><span>Password</span><input type="password" asp-for="Password" autocomplete="current-password" /></label>
+            <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+            <button class="btn primary" type="submit">Sign in</button>
+        </form>
+    </div>
+</body>
+</html>

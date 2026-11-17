@@ -1,0 +1,36 @@
+@page "/Settings"
+@inject OLearn.Services.RuntimeSettings Runtime
+@{ ViewData["Title"] = "Settings"; }
+<main data-page="settings">
+    <h1>Settings</h1>
+    <div class="card">
+        <h3>This device</h3>
+        <p class="muted">Technical details about the copies stored on this device.</p>
+        <button class="btn primary" id="btn-sync" type="button">Sync now</button>
+        <pre id="device-info">Loading...</pre>
+    </div>
+    @if (Runtime.TestMode)
+    {
+        <div class="card">
+            <h3>Test tools (test mode only)</h3>
+            <p class="muted">These change data on this device only, to run the control tests in the evaluation.</p>
+            <label class="field"><input type="checkbox" id="chk-baseline" /> <b>Baseline mode</b> (controls off): resources saved while this is on are plain downloads with no lease checks.</label>
+            <label class="field"><span>Simulated clock offset in minutes (negative = clock set back)</span>
+                <input type="number" id="clock-minutes" value="0" />
+                <button class="btn" id="btn-clock" type="button">Set</button>
+                <button class="btn" id="btn-clock-reset" type="button">Reset clock</button></label>
+            <label class="field"><span>Stored copy to alter</span><select id="diag-resource"></select></label>
+            <div class="actions">
+                <button class="btn" id="btn-flip" type="button">Flip a byte of the stored file</button>
+                <button class="btn" id="btn-subst" type="button">Substitute the stored content</button>
+            </div>
+            <h4>Audit log tamper test</h4>
+            <div class="actions">
+                <button class="btn" id="btn-tamper-remove" type="button">Upload log with an entry removed</button>
+                <button class="btn" id="btn-tamper-alter" type="button">Upload log with an entry altered</button>
+                <button class="btn" id="btn-refresh" type="button">Refresh details</button>
+            </div>
+            <pre id="diag-out"></pre>
+        </div>
+    }
+</main>

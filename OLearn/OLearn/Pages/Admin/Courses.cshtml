@@ -1,0 +1,33 @@
+@page
+@model OLearn.Pages.Admin.CoursesModel
+@{ ViewData["Title"] = "Courses and tasks"; }
+<main>
+    <h1>Courses, modules and tasks</h1>
+    <partial name="_AdminNav" />
+    <div class="grid">
+        <form method="post" asp-page-handler="Course" class="card">
+            <h3>Add course</h3>
+            <label class="field"><span>Code</span><input type="text" name="code" required /></label>
+            <label class="field"><span>Name</span><input type="text" name="name" required /></label>
+            <button class="btn primary">Add</button>
+        </form>
+        <form method="post" asp-page-handler="Module" class="card">
+            <h3>Add module</h3>
+            <label class="field"><span>Course</span><select name="courseId">@foreach (var c in Model.Courses) { <option value="@c.CourseId">@c.CourseCode</option> }</select></label>
+            <label class="field"><span>Module name</span><input type="text" name="name" required /></label>
+            <button class="btn primary">Add</button>
+        </form>
+        <form method="post" asp-page-handler="Task" class="card">
+            <h3>Add learning task</h3>
+            <label class="field"><span>Module</span><select name="moduleId">@foreach (var m in Model.Modules) { <option value="@m.ModuleId">@m.Course!.CourseCode - @m.ModuleName</option> }</select></label>
+            <label class="field"><span>Title</span><input type="text" name="title" required /></label>
+            <button class="btn primary">Add</button>
+        </form>
+    </div>
+    <h2>Current structure</h2>
+    @foreach (var c in Model.Courses)
+    {
+        <div class="card"><b>@c.CourseCode @c.CourseName</b>
+            <ul>@foreach (var m in c.Modules) { <li>@m.ModuleName</li> }</ul></div>
+    }
+</main>
