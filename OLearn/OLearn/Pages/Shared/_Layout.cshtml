@@ -15,7 +15,7 @@
     <link rel="icon" href="/icons/icon-192.png" />
     <link rel="stylesheet" href="/css/site.css" />
 </head>
-<body data-testmode="@(Runtime.TestMode ? "true" : "false")">
+<body data-testmode="@(Runtime.TestMode ? "true" : "false")" data-user="@(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)">
     <header class="top">
         <span class="brand">iLearn Lite</span>
         <span id="conn-badge" class="pill online">Online</span>

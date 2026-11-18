@@ -1,12 +1,17 @@
 // db.js - thin IndexedDB wrapper (local store D2 in the design)
-const DB_NAME = 'olearn';
+//const DB_NAME = 'olearn';
 const DB_VERSION = 1;
 let dbPromise = null;
+
+function dbName() {
+    const uid = globalThis.document?.body?.dataset?.user;
+    return uid ? 'olearn-u' + uid : 'olearn';
+}
 
 export function openDb() {
   if (dbPromise) return dbPromise;
   dbPromise = new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
+      const req = indexedDB.open(dbName(), DB_VERSION);
     req.onupgradeneeded = () => {
       const d = req.result;
       d.createObjectStore('meta', { keyPath: 'key' });

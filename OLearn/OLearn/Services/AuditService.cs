@@ -60,8 +60,11 @@ public class AuditService
             if (e.PrevHash != lastHash)
                 return new AuditResult(false, 0, $"Entry {e.Seq} does not continue the previous entry (chain broken).");
 
-            Guid? leaseId = null;
-            if (Guid.TryParse(e.LeaseId, out var g) && await _db.Leases.AnyAsync(l => l.LeaseId == g && l.UserId == userId)) leaseId = g;
+            Guid? leaseId = null; var ownerId = userId;
+            if (Guid.TryParse(e.LeaseId, out var g)) {
+                var owner = await _db.Leases.Where(l => l.LeaseId == g).Select(l => (int?)l.UserId).FirstOrDefaultAsync();
+                if (owner != null) { leaseId = g; ownerId = owner.Value; }
+            }
 
             toStore.Add(new AuditEvent
             {
