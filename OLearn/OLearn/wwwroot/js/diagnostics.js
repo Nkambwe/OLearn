@@ -59,7 +59,7 @@ export async function describeState() {
     pendingAuditEntries: (await pendingEntries()).length,
     auditRejected: await db.getMeta('auditRejected', null),
     keysHeld: keys.map((k) => k.versionId),
-    copies: copies.map((c) => ({ resourceId: c.resourceId, title: c.title, version: c.versionLabel, mode: c.mode, status: c.status, hasFile: c.hasFile, expiresAt: c.expiresAt })),
+    copies: copies.map((c) => ({ resourceId: c.resourceId, title: c.title, leaseId: c.leaseId, version: c.versionLabel, mode: c.mode, status: c.status, hasFile: c.hasFile, expiresAt: c.expiresAt })),
   };
 }
 export { entryHash };
