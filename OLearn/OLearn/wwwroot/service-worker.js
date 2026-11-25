@@ -1,10 +1,10 @@
 // service-worker.js - loads the application shell offline (NFR-01). Resource files are NOT cached here;
 // they are kept encrypted in IndexedDB under a lease.
-const CACHE = 'olearn-shell-v1';
+const CACHE = 'olearn-shell-v3';
 const SHELL = ['/', '/Dashboard', '/Courses', '/Resources', '/Progress', '/Updates', '/Settings', '/Help',
   '/css/site.css', '/js/app.js', '/js/db.js', '/js/clock.js', '/js/leasecrypto.js', '/js/audit.js', '/js/offline.js',
   '/js/sync.js', '/js/resources.js', '/js/pages.js', '/js/ui.js', '/js/diagnostics.js', '/js/lease-public-key.js',
-  '/manifest.json', '/offline.html', '/icons/icon-192.png', '/icons/icon-512.png'];
+  '/img/isbat_logo.png', '/img/isbat_crest.png', '/img/isbat_wordmark.png', '/img/isbat_logo_grey.png', '/manifest.json', '/offline.html', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
@@ -34,7 +34,7 @@ self.addEventListener('fetch', (event) => {
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
     try {
-      const res = await Promise.race([fetch(req), new Promise((_, rej) => setTimeout(() => rej(new Error('slow')), 4000))]);
+      const res = await Promise.race([fetch(req, { cache: 'no-cache' }), new Promise((_, rej) => setTimeout(() => rej(new Error('slow')), 4000))]);
       if (res.ok && !res.redirected) cache.put(req, res.clone());
       return res;
     } catch {

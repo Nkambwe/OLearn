@@ -1,10 +1,14 @@
-<div class="card">
-    <a href="/Admin">Overview</a> ·
-    <a href="/Admin/Courses">Courses and tasks</a> ·
-    <a href="/Admin/Resources">Resources</a> ·
-    <a href="/Admin/Import">Bulk import</a> ·
-    <a href="/Admin/Leases">Leases</a> ·
-    <a href="/Admin/Report">Offline access report</a> ·
-    <a href="/Admin/Users">Users</a> ·
-    <a href="/Admin/Settings">Settings and logs</a>
-</div>
+@{
+    var p = Context.Request.Path.Value ?? "";
+    string A(string x) => string.Equals(p.TrimEnd('/'), x, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+}
+<nav class="subnav" aria-label="Administration">
+    <a class="@A("/Admin")" href="/Admin">Overview</a>
+    <a class="@A("/Admin/Courses")" href="/Admin/Courses">Courses and tasks</a>
+    <a class="@A("/Admin/Resources")" href="/Admin/Resources">Resources</a>
+    <a class="@A("/Admin/Import")" href="/Admin/Import">Bulk import</a>
+    <a class="@A("/Admin/Leases")" href="/Admin/Leases">Leases</a>
+    <a class="@A("/Admin/Report")" href="/Admin/Report">Offline access report</a>
+    <a class="@A("/Admin/Users")" href="/Admin/Users">Users</a>
+    <a class="@A("/Admin/Settings")" href="/Admin/Settings">Settings and logs</a>
+</nav>

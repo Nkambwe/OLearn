@@ -3,40 +3,96 @@
     var path = Context.Request.Path.Value ?? "/";
     string Active(string p) => path.StartsWith(p, StringComparison.OrdinalIgnoreCase) ? "active" : "";
     var isAdmin = User.IsInRole("Admin");
+    var name = User.Identity?.Name ?? "";
+    var initials = string.IsNullOrWhiteSpace(name) ? "?" : name.Trim().Substring(0, 1).ToUpperInvariant();
+    var icons = new Dictionary<string, string>
+    {
+        ["Dashboard"] = "<path d='M3 11l9-8 9 8'/><path d='M5 10v10h5v-6h4v6h5V10'/>",
+        ["Courses"] = "<path d='M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z'/><path d='M4 21V5'/><path d='M9 7h6'/>",
+        ["Resources"] = "<path d='M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z'/><path d='M14 3v5h5'/><path d='M9 13h6M9 17h6'/>",
+        ["Progress"] = "<path d='M4 20V10M10 20V4M16 20v-8M22 20H2'/>",
+        ["Updates"] = "<path d='M21 12a9 9 0 0 1-15.5 6.2L3 16'/><path d='M3 12A9 9 0 0 1 18.5 5.8L21 8'/><path d='M21 3v5h-5M3 21v-5h5'/>",
+        ["Settings"] = "<circle cx='12' cy='12' r='3'/><path d='M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z'/>",
+        ["Help"] = "<circle cx='12' cy='12' r='9'/><path d='M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7'/><path d='M12 17h.01'/>",
+        ["Admin"] = "<path d='M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z'/><path d='M9 12l2 2 4-4'/>",
+        ["More"] = "<circle cx='5' cy='12' r='1.5'/><circle cx='12' cy='12' r='1.5'/><circle cx='19' cy='12' r='1.5'/>",
+        ["Out"] = "<path d='M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4'/><path d='M16 17l5-5-5-5M21 12H9'/>",
+        ["Sync"] = "<path d='M21 12a9 9 0 0 1-15.5 6.2L3 16'/><path d='M3 12A9 9 0 0 1 18.5 5.8L21 8'/><path d='M21 3v5h-5M3 21v-5h5'/>"
+    };
+    Microsoft.AspNetCore.Html.IHtmlContent Icon(string k) => Html.Raw("<svg class='ico' viewBox='0 0 24 24' aria-hidden='true'>" + icons[k] + "</svg>");
+    var items = new List<(string Key, string Href)> { ("Dashboard", "/Dashboard"), ("Courses", "/Courses"), ("Resources", "/Resources"), ("Progress", "/Progress"), ("Updates", "/Updates"), ("Settings", "/Settings"), ("Help", "/Help") };
+    if (isAdmin) { items.Add(("Admin", "/Admin")); }
 }
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#1f4fd8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#c8161d" />
     <title>@(ViewData["Title"] ?? "iLearn Lite") - iLearn Lite</title>
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" href="/icons/icon-192.png" />
     <link rel="stylesheet" href="/css/site.css" />
 </head>
-<body data-testmode="@(Runtime.TestMode ? "true" : "false")" data-user="@(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)">
+<body class="app" data-testmode="@(Runtime.TestMode ? "true" : "false")" data-user="@(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)">
+    <aside class="side">
+        <a class="side-logo" href="/Dashboard" aria-label="iLearn Lite home"><img class="full" src="/img/isbat_logo.png" alt="ISBAT University" /><img class="crest" src="/img/isbat_crest.png" alt="" /></a>
+        <nav class="menu" aria-label="Main">
+            @foreach (var it in items)
+            {
+                <a class="@Active(it.Href)" href="@it.Href">@Icon(it.Key)<span>@it.Key</span></a>
+            }
+        </nav>
+        <img class="side-crest" src="/img/isbat_logo_grey.png" alt="" />
+    </aside>
+
     <header class="top">
-        <span class="brand">iLearn Lite</span>
-        <span id="conn-badge" class="pill online">Online</span>
-        <button class="btn" id="btn-sync-top" type="button">Sync now</button>
-        <span class="muted">@User.Identity?.Name</span>
-        <form method="post" asp-page="/Account/Logout" class="inline"><button class="btn" type="submit">Sign out</button></form>
+        <a class="top-logo" href="/Dashboard" aria-label="iLearn Lite home"><img src="/img/isbat_wordmark.png" alt="ISBAT University" /></a>
+        <div class="greet">
+            <b>iLearn Lite</b>
+            <span>Welcome, @name</span>
+        </div>
+        <div class="tools">
+            <span id="conn-badge" class="pill online">Online</span>
+            <button class="btn small" id="btn-sync-top" type="button">@Icon("Sync")<span>Sync now</span></button>
+            <span class="avatar" title="@name">@initials</span>
+            <form method="post" asp-page="/Account/Logout" class="inline signout"><button class="iconbtn" type="submit" title="Sign out" aria-label="Sign out">@Icon("Out")</button></form>
+        </div>
     </header>
-    <nav class="menu">
-        <a class="@Active("/Dashboard")" href="/Dashboard">Dashboard</a>
-        <a class="@Active("/Courses")" href="/Courses">Courses</a>
-        <a class="@Active("/Resources")" href="/Resources">Resources</a>
-        <a class="@Active("/Progress")" href="/Progress">Progress</a>
-        <a class="@Active("/Updates")" href="/Updates">Updates</a>
-        <a class="@Active("/Settings")" href="/Settings">Settings</a>
-        <a class="@Active("/Help")" href="/Help">Help</a>
-        @if (isAdmin)
-        {
-            <a class="@Active("/Admin")" href="/Admin">Admin</a>
-        }
+
+    <div class="page">
+        @RenderBody()
+    </div>
+
+    <nav class="tabbar" aria-label="Quick">
+        <a class="@Active("/Dashboard")" href="/Dashboard">@Icon("Dashboard")<span>Home</span></a>
+        <a class="@Active("/Courses")" href="/Courses">@Icon("Courses")<span>Courses</span></a>
+        <a class="fab @Active("/Resources")" href="/Resources" aria-label="Resources"><span class="fab-dot">@Icon("Resources")</span><span>Resources</span></a>
+        <a class="@Active("/Updates")" href="/Updates">@Icon("Updates")<span>Updates</span></a>
+        <button type="button" id="more-btn" aria-expanded="false" aria-controls="more-sheet">@Icon("More")<span>More</span></button>
     </nav>
-    @RenderBody()
+    <div id="more-sheet" class="sheet" hidden>
+        <div class="sheet-card">
+            <p class="muted">@name</p>
+            <a href="/Progress">@Icon("Progress")Progress</a>
+            <a href="/Settings">@Icon("Settings")Settings</a>
+            <a href="/Help">@Icon("Help")Help</a>
+            @if (isAdmin) { <a href="/Admin">@Icon("Admin")Admin</a> }
+            <button type="button" id="sheet-sync">@Icon("Sync")Sync now</button>
+            <form method="post" asp-page="/Account/Logout"><button type="submit">@Icon("Out")Sign out</button></form>
+        </div>
+    </div>
+    <script>
+        (function () {
+            var b = document.getElementById('more-btn'), s = document.getElementById('more-sheet');
+            if (!b || !s) return;
+            function set(o) { s.hidden = !o; b.setAttribute('aria-expanded', o ? 'true' : 'false'); }
+            b.addEventListener('click', function () { set(s.hidden); });
+            s.addEventListener('click', function (e) { if (e.target === s) set(false); });
+            var ss = document.getElementById('sheet-sync');
+            if (ss) ss.addEventListener('click', function () { var t = document.getElementById('btn-sync-top'); if (t) t.click(); set(false); });
+        })();
+    </script>
     @if (!path.StartsWith("/Admin", StringComparison.OrdinalIgnoreCase))
     {
         <script src="/js/lease-public-key.js"></script>

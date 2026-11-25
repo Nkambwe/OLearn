@@ -35,11 +35,15 @@ const PAGES = {
     if (!catalog) { box.append(h('p', { class: 'muted' }, 'Connect and press Sync now to load your courses.')); return; }
     const by = new Map();
     for (const r of catalog.resources) {
-      if (!by.has(r.courseId)) by.set(r.courseId, { name: `${r.courseCode} ${r.courseName}`, mods: new Map() });
+      if (!by.has(r.courseId)) by.set(r.courseId, { code: r.courseCode, title: r.courseName, mods: new Map() });
       const c = by.get(r.courseId); c.mods.set(r.moduleId, { name: r.moduleName, n: (c.mods.get(r.moduleId)?.n || 0) + 1 });
     }
-    for (const [cid, c] of by) box.append(h('article', { class: 'card' }, h('h3', {}, c.name),
-      h('ul', {}, [...c.mods].map(([mid, m]) => h('li', {}, h('a', { href: `/Resources?course=${cid}&module=${mid}` }, m.name), ` (${m.n})`)))));
+    for (const [cid, c] of by) {
+      const total = [...c.mods.values()].reduce((a, m) => a + m.n, 0);
+      box.append(h('article', { class: 'course-card' },
+        h('header', { class: 'course-head' }, h('span', { class: 'course-code' }, c.code), h('h3', {}, c.title), h('span', { class: 'course-count' }, `${total} resource${total === 1 ? '' : 's'}`)),
+        h('div', { class: 'course-links' }, [...c.mods].map(([mid, m]) => h('a', { href: `/Resources?course=${cid}&module=${mid}` }, h('span', {}, m.name), h('span', { class: 'count' }, String(m.n)))))));
+    }
   },
   async resources() {
     const box = $('list'); const search = $('search');
@@ -75,11 +79,12 @@ const PAGES = {
     for (const t of tasks) { if (!mods.has(t.moduleId)) mods.set(t.moduleId, { name: t.moduleName, tasks: [] }); mods.get(t.moduleId).tasks.push(t); }
     for (const m of mods.values()) {
       const doneN = m.tasks.filter((t) => prog.get(t.taskId)?.isCompleted).length;
-      box.append(h('h3', {}, m.name), h('p', { class: 'muted' }, `${doneN} of ${m.tasks.length} tasks complete`));
+      box.append(h('div', { class: 'section-head' }, h('h3', {}, m.name), h('span', { class: 'pill' }, `${doneN} of ${m.tasks.length} complete`)),
+        h('div', { class: 'bar slim' }, h('div', { style: `width:${Math.round(doneN * 100 / m.tasks.length)}%` })));
       for (const t of m.tasks) {
         box.append(h('label', { class: 'card task' },
           h('input', { type: 'checkbox', checked: !!prog.get(t.taskId)?.isCompleted, onchange: async (e) => { await setTaskProgress(t.taskId, e.target.checked); toast(navigator.onLine ? 'Saved.' : 'Saved on this device. It will sync when you are online.'); if (navigator.onLine) syncNow(); PAGES.progress(); } }),
-          ' ', t.taskTitle, t.resourceTitle ? h('span', { class: 'muted' }, ' — ' + t.resourceTitle) : null));
+          h('span', { class: 'task-text' }, t.taskTitle, t.resourceTitle ? h('span', { class: 'muted' }, ' — ' + t.resourceTitle) : null)));
       }
     }
   },
