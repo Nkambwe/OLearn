@@ -27,7 +27,7 @@ const PAGES = {
     const recent = (await db.all('recent')).sort((a, b) => b.openedAt.localeCompare(a.openedAt)).slice(0, 3);
     const list = $('recent'); list.replaceChildren();
     if (!recent.length) list.append(h('p', { class: 'muted' }, 'Nothing opened yet.'));
-    for (const r of recent) { const it = items.find((i) => i.res.resourceId === r.resourceId); if (it) list.append(h('p', {}, h('a', { href: '/Resources' }, it.res.title), ' ', h('span', { class: 'muted' }, fmtDate(r.openedAt)))); }
+    for (const r of recent) { const it = items.find((i) => i.res.resourceId === r.resourceId); if (it) list.append(h('a', { class: 'recent-link', href: '/Resources' }, h('span', { class: 'rl-title' }, it.res.title), h('span', { class: 'rl-date' }, fmtDate(r.openedAt)))); }
   },
   async courses() {
     const { catalog } = await loadModel();
